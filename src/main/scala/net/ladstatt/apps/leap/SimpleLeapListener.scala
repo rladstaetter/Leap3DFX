@@ -61,20 +61,19 @@ class SimpleLeapListener extends Listener {
       numHands.set(frame.hands.count)
       val screen: Screen = controller.locatedScreens.get(0)
       if (screen != null && screen.isValid) {
-        var hand: Hand = null
-        if (numHands.get > 1) {
-          hand = frame.hands.leftmost
-        }
-        else {
-          hand = frame.hands.get(0)
-        }
+        val hand =
+          if (numHands.get > 1)
+            frame.hands.leftmost
+          else
+            frame.hands.get(0)
+
         z1.set(hand.palmPosition.getZ)
         pitchLeftAverage.add(hand.direction.pitch)
         rollLeftAverage.add(hand.palmNormal.roll)
         yawLeftAverage.add(hand.direction.yaw)
-        pitchLeft.set(dAverage(pitchLeftAverage))
-        rollLeft.set(dAverage(rollLeftAverage))
-        yawLeft.set(dAverage(yawLeftAverage))
+        if (pitchLeftAverage.size > 0) pitchLeft.set(pitchLeftAverage.sum / pitchLeftAverage.size)
+        if (rollLeftAverage.size > 0) rollLeft.set(rollLeftAverage.sum / rollLeftAverage.size)
+        if (yawLeftAverage.size > 0) yawLeft.set(yawLeftAverage.sum / yawLeftAverage.size)
         val intersect: Vector = screen.intersect(hand.palmPosition, hand.direction, true)
         posLeftAverage.add(intersect)
         val avIntersect: Vector = vAverage(posLeftAverage)
@@ -82,36 +81,19 @@ class SimpleLeapListener extends Listener {
       }
     }
 
-    for (gesture <- frame.gestures().iterator()
+    for (gesture <- frame.gestures
          if (numHands.get > 1 && (gesture.`type` == Type.TYPE_CIRCLE))) {
       val cGesture = new CircleGesture(gesture)
       for (h <- cGesture.hands if (h == frame.hands.rightmost)) {
         circle.set(cGesture)
       }
     }
+
   }
 
   private def vAverage(vectors: LimitQueue[Vector]): Vector = {
-    var vx: Float = 0f
-    var vy: Float = 0f
-    var vz: Float = 0f
-
-    for (v <- vectors) {
-      vx = vx + v.getX
-      vy = vy + v.getY
-      vz = vz + v.getZ
-    }
+    val (vx, vy, vz) = vectors.foldLeft((0f, 0f, 0f))((acc, v) => (acc._1 + v.getX, acc._2 + v.getY, acc._3 + v.getZ))
     new Vector(vx / vectors.size, vy / vectors.size, vz / vectors.size)
-  }
-
-  private def dAverage(vectors: LimitQueue[Double]): Double = {
-    var vx: Double = 0
-
-
-    for (d <- vectors) {
-      vx = vx + d
-    }
-    return vx / vectors.size
   }
 
   private final val z1: DoubleProperty = new SimpleDoubleProperty(0d)
@@ -133,7 +115,7 @@ class SimpleLeapListener extends Listener {
       while (size > limit) {
         super.remove
       }
-      return true
+      true
     }
 
 
