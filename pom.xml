@@ -29,6 +29,47 @@
             <artifactId>leap</artifactId>
             <version>1.0.9.8391</version>
         </dependency>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <version>2.10.2</version>
+        </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
+                <version>3.1.6</version>
+                <configuration>
+                    <!-- see https://gist.github.com/tpolecat/8812750 -->
+                    <args>
+                        <arg>deprecation</arg>
+                        <!-- two args-->
+                        <arg>encoding</arg>
+                        <arg>UTF-8</arg>
+
+                        <arg>feature</arg>
+                        <arg>language:existentials</arg>
+                        <arg>language:experimental.macros</arg>
+                        <arg>language:higherKinds</arg>
+                        <arg>language:implicitConversions</arg>
+                        <arg>unchecked</arg>
+                        <arg>Xfatal-warnings</arg>
+                        <arg>Xlint</arg>
+                        <arg>Yno-adapted-args</arg>
+                        <arg>Ywarn-all</arg>
+                        <arg>Ywarn-dead-code</arg>
+                        <arg>Ywarn-numeric-widen</arg>
+                        <arg>Ywarn-value-discard</arg>
+                    </args>
+                    <jvmArgs>
+                        <jvmArg>-Xms64m</jvmArg>
+                        <jvmArg>-Xmx1024m</jvmArg>
+                    </jvmArgs>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
