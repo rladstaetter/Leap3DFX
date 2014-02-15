@@ -19,13 +19,14 @@ import com.leapmotion.leap.Vector
 import com.leapmotion.leap.Gesture.Type
 import com.leapmotion.leap.CircleGesture
 import scala.collection.JavaConversions._
+import javafx.scene.control.Label
 
 /**
  *
  * @author José Pereda Llamas
  *         Created on 10-abr-2013 - 19:58:55
  */
-class SimpleLeapListener extends Listener {
+class SimpleLeapListener(header : Label) extends Listener with JfxUtils {
 
   def circleProperty: ObservableValue[CircleGesture] = {
     return circle
@@ -53,6 +54,7 @@ class SimpleLeapListener extends Listener {
 
   override def onConnect(controller: Controller) {
     controller.enableGesture(Gesture.Type.TYPE_CIRCLE)
+    controller.enableGesture(Gesture.Type.TYPE_SWIPE)
   }
 
   override def onFrame(controller: Controller) {
@@ -88,6 +90,22 @@ class SimpleLeapListener extends Listener {
         circle.set(cGesture)
       }
     }
+    /*
+    for (gesture <- frame.gestures) {
+      gesture.`type` match {
+        case Type.TYPE_INVALID => println(s"type: INVALID")
+        case Type.TYPE_SWIPE => execOnUIThread {
+          header.setText(s"type: SWIPE")
+        }
+        case Type.TYPE_CIRCLE => execOnUIThread {
+          println("jodel")
+          header.setText(s"type: CIRCLE")
+        }
+        case Type.TYPE_SCREEN_TAP => println(s"type: SCREEN_TAP")
+        case Type.TYPE_KEY_TAP => println(s"type: KEY_TAP")
+        case x => println("UNKNOWN TYPE")
+      }
+    }  */
 
   }
 
